@@ -73,11 +73,15 @@ class PasParser(Parser):
     def procedure_declaration_part(self,p):
         pass
 
+    @_('empty')
+    def list_procedure_declaration(self,p):
+        pass
+
     @_('procedure_declaration SEMICOLON')
     def list_procedure_declaration(self,p):
         pass
 
-    @_('list_procedure_declaration SEMICOLON procedure_declaration')
+    @_('list_procedure_declaration SEMICOLON')
     def list_procedure_declaration(self,p):
         pass
 
