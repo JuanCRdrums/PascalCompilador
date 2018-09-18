@@ -57,7 +57,7 @@ class PasParser(Parser):
     def array_type(self,p):
         pass
 
-    @_('integer_constant DOT DOT integer_constant')
+    @_('INTCONST DOT DOT INTCONST')
     def index_range(self,p):
         pass
 
@@ -79,6 +79,10 @@ class PasParser(Parser):
 
     @_('list_procedure_declaration SEMICOLON procedure_declaration')
     def list_procedure_declaration(self,p):
+        pass
+
+    @_('PROCEDURE ID SEMICOLON block')
+    def procedure_declaration(self,p):
         pass
 
     @_('compound_statement')
@@ -233,7 +237,11 @@ class PasParser(Parser):
     def factor(self,p):
         pass
 
-    @_('constant')
+    @_('INTCONST')
+    def factor(self,p):
+        pass
+
+    @_('CHARCONST')
     def factor(self,p):
         pass
 
@@ -327,4 +335,12 @@ class PasParser(Parser):
 
     @_('ID')
     def variable_identifier(self,p):
+        pass
+
+    @_('ID')
+    def identifier(self,p):
+        pass
+
+    @_('')
+    def empty(self,p):
         pass
