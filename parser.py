@@ -128,3 +128,203 @@ class PasParser(Parser):
     @_('procedure_identifier')
     def procedure_statement(self,p):
         pass
+
+    @_('identifier')
+    def procedure_identifier(self,p):
+        pass
+
+    @_('READ LPAR list_input_variable RPAR')
+    def read_statement(self,p):
+        pass
+
+    @_('input_variable')
+    def list_input_variable(self,p):
+        pass
+
+    @_('list_input_variable COMA input_variable')
+    def list_input_variable(self,p):
+        pass
+
+    @_('variable')
+    def input_variable(self,p):
+        pass
+
+    @_('WRITE LPAR list_output_value RPAR')
+    def write_statement(self,p):
+        pass
+
+    @_('output_value')
+    def list_output_value(self,p):
+        pass
+
+    @_('list_output_value COMA output_value')
+    def list_output_value(self,p):
+        pass
+
+    @_('expression')
+    def output_value(self,p):
+        pass
+
+    @_('compound_statement')
+    def structured_statement(self,p):
+        pass
+
+    @_('if_statement')
+    def structured_statement(self,p):
+        pass
+
+    @_('while_statement')
+    def structured_statement(self,p):
+        pass
+
+    @_('IF expression THEN statement')
+    def if_statement(self,p):
+        pass
+
+    @_('IF expression THEN statement ELSE statement')
+    def if_statement(self,p):
+        pass
+
+    @_('WHILE expression DO statement')
+    def while_statement(self,p):
+        pass
+
+    @_('simple_expression')
+    def expression(self,p):
+        pass
+
+    @_('simple_expression relational_operator simple_expression')
+    def expression(self,p):
+        pass
+
+    @_('sign term list_adding_term')
+    def simple_expression(self,p):
+        pass
+
+    @_('adding_operator term')
+    def list_adding_term(self,p):
+        pass
+
+    @_('empty')
+    def list_adding_term(self,p):
+        pass
+
+    @_('list_adding_term adding_operator term')
+    def list_adding_term(self,p):
+        pass
+
+    @_('factor list_mult_factor')
+    def term(self,p):
+        pass
+
+    @_('multiplying_operator factor')
+    def list_mult_factor(self,p):
+        pass
+
+    @_('empty')
+    def list_mult_factor(self,p):
+        pass
+
+    @_('list_mult_factor factor')
+    def list_mult_factor(self,p):
+        pass
+
+    @_('variable')
+    def factor(self,p):
+        pass
+
+    @_('constant')
+    def factor(self,p):
+        pass
+
+    @_('LPAR expression RPAR')
+    def factor(self,p):
+        pass
+
+    @_('NOT factor')
+    def factor(self,p):
+        pass
+
+    @_('EQ')
+    def relational_operator(self,p):
+        pass
+
+    @_('NE')
+    def relational_operator(self,p):
+        pass
+
+    @_('LT')
+    def relational_operator(self,p):
+        pass
+
+    @_('LE')
+    def relational_operator(self,p):
+        pass
+
+    @_('GE')
+    def relational_operator(self,p):
+        pass
+
+    @_('GT')
+    def relational_operator(self,p):
+        pass
+
+    @_('PLUS')
+    def sign(self,p):
+        pass
+
+    @_('MINUS')
+    def sign(self,p):
+        pass
+
+    @_('empty')
+    def sign(self,p):
+        pass
+
+    @_('PLUS')
+    def adding_operator(self,p):
+        pass
+
+    @_('MINUS')
+    def adding_operator(self,p):
+        pass
+
+    @_('OR')
+    def adding_operator(self,p):
+        pass
+
+    @_('TIMES')
+    def multiplying_operator(self,p):
+        pass
+
+    @_('DIV')
+    def multiplying_operator(self,p):
+        pass
+
+    @_('AND')
+    def multiplying_operator(self,p):
+        pass
+
+    @_('entire_variable')
+    def variable(self,p):
+        pass
+
+    @_('indexed_variable')
+    def variable(self,p):
+        pass
+
+    @_('array_variable LBR expression RBR')
+    def indexed_variable(self,p):
+        pass
+
+    @_('entire_variable')
+    def array_variable(self,p):
+        pass
+
+    @_('variable_identifier')
+    def entire_variable(self,p):
+        pass
+
+    @_('ID')
+    def variable_identifier(self,p):
+        pass
