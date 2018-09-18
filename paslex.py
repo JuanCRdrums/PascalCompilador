@@ -4,11 +4,10 @@ class PascalLexer(Lexer):
 
     keywords = { 'program', 'var', 'array', 'of', 'procedure', 'begin', 'end',
                 'write', 'read', 'if', 'then', 'else', 'while', 'do', 'not',
-                'or', 'div', 'and', 'const', 'type', 'integer', 'boolean',
-                'true', 'false', 'char'}
+                'or', 'div', 'and'}
     tokens = { ID, INTCONST, CHARCONST, *{kw.upper() for kw in keywords},
                 PLUS, MINUS, TIMES, EQ, NE, LT, GT, LE, GE, LPAR, RPAR, LBR,
-                RBR, ASSIGN, DOT, COMA, SEMICOLON, COLON, RANGE }
+                RBR, ASSIGN, DOT, COMA, SEMICOLON, COLON }
 
     #ignore = r' \t({([\n]|[.])*?})*'
     ignore = r' \t'
@@ -34,7 +33,6 @@ class PascalLexer(Lexer):
     LBR = r'\['
     RBR = r'\]'
     ASSIGN = r':='
-    RANGE : r'\.\.'
     DOT = r'\.'
     COMA = r','
     SEMICOLON = r';'
