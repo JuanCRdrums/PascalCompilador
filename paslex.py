@@ -14,7 +14,6 @@ class PascalLexer(Lexer):
 
     ignore_comment = r'\(\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*?\*+\)|{[^{]*}'
     #ignore_comment = r'{[^}]*}'
-    ignore_newline = r'\n+'
 
 
 
@@ -49,9 +48,13 @@ class PascalLexer(Lexer):
         t.value = int(t.value)
         return t
 
+    # Line number tracking
+    @_(r'\n+')
+    def ignore_newline(self, t):
+        self.lineno += t.value.count('\n')
 
     def error(self,t):
-        print("Illegal character '%s'" % t.value[0])
+        print("Line %d: Illegal character '%s'" % (self.lineno,t.value[0]))
         self.index += 1
 
 

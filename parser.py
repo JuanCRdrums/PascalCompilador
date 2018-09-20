@@ -348,3 +348,11 @@ class PasParser(Parser):
     @_('')
     def empty(self,p):
         pass
+
+if __name__ == '__main__':
+    lexer = PascalLexer()
+    parser = PasParser()
+    toopen = open('tests/mandelbrot.pas')
+    code = toopen.read()
+    result = parser.parse(lexer.tokenize(code))
+    print(result)
