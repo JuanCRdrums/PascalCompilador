@@ -33,8 +33,8 @@ end
 
 function mandel() int;
 
-var dx float := (xmax - xmin)/width;
-var dy float := (ymax - ymin)/height;
+var dx float := (xmax - xmin)width;
+var dy float := (ymax - ymin) div height;
 
 var y float := ymax;
 var x float;
