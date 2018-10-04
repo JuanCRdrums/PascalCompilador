@@ -110,11 +110,15 @@ class PasParser(Parser):
     def compound_statement(self,p):
         return p
 
-    @_('statement')
+    @_('statement list_statement')
     def list_statement(self,p):
         return p
 
-    @_('SEMICOLON list_statement SEMICOLON statement')
+    @_('empty')
+    def list_statement(self,p):
+        return p;
+
+    @_('SEMICOLON list_statement')
     def list_statement(self,p):
         return p
 
@@ -222,10 +226,6 @@ class PasParser(Parser):
     def simple_expression(self,p):
         return p
 
-    @_('adding_operator term')
-    def list_adding_term(self,p):
-        return p
-
     @_('empty')
     def list_adding_term(self,p):
         return p
@@ -238,15 +238,11 @@ class PasParser(Parser):
     def term(self,p):
         return p
 
-    @_('multiplying_operator factor')
-    def list_mult_factor(self,p):
-        return p
-
     @_('empty')
     def list_mult_factor(self,p):
         return p
 
-    @_('list_mult_factor factor')
+    @_('list_mult_factor multiplying_operator factor')
     def list_mult_factor(self,p):
         return p
 
