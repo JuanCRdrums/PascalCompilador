@@ -3,6 +3,10 @@ from paslex import PascalLexer
 
 
 
+class PasParser(Parser):
+
+    tokens = PascalLexer.tokens
+
     precedence = (
         ('left', 'OR'),
 		('left', 'AND'),
@@ -16,7 +20,7 @@ from paslex import PascalLexer
 
     @_('PROGRAM identifier SEMICOLON block DOT')
     def program(self,p):
-        return BinOp(p[2],p.identifier,p.block)
+        return p
 
     @_('variable_declaration_part procedure_declaration_part statement_part')
     def block(self,p):
