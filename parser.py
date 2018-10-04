@@ -1,13 +1,22 @@
 from sly import Parser
 from paslex import PascalLexer
 
-class PasParser(Parser):
 
-    tokens = PascalLexer.tokens
+
+    precedence = (
+        ('left', 'OR'),
+		('left', 'AND'),
+		('left', 'NOT'),
+		('left', 'PLUS','MINUS'),
+		('left', 'TIMES','DIV'),
+        ('right', 'ELSE'),
+    )
+
+    start = 'program'
 
     @_('PROGRAM identifier SEMICOLON block DOT')
     def program(self,p):
-        return p
+        return BinOp(p[2],p.identifier,p.block)
 
     @_('variable_declaration_part procedure_declaration_part statement_part')
     def block(self,p):
@@ -339,10 +348,14 @@ class PasParser(Parser):
 
     @_('ID')
     def variable_identifier(self,p):
+        line = p.lineno
+        index = p.index
         return p
 
     @_('ID')
     def identifier(self,p):
+        line = p.lineno
+        index = p.index
         return p
 
     @_('')
@@ -352,7 +365,7 @@ class PasParser(Parser):
 if __name__ == '__main__':
     lexer = PascalLexer()
     parser = PasParser()
-    toopen = open('tests/mandelbrot.pas')
+    toopen = open('tests/test1.pas')
     code = toopen.read()
     result = parser.parse(lexer.tokenize(code))
     print(result)
