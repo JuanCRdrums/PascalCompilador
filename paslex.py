@@ -10,7 +10,7 @@ class PascalLexer(Lexer):
                 RBR, ASSIGN, DOT, COMA, SEMICOLON, COLON }
 
     #ignore = r' \t({([\n]|[.])*?})*'
-    ignore = r' \t'
+    ignore = r' '
 
     ignore_comment = r'\(\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*?\*+\)|{[^{]*}'
     #ignore_comment = r'{[^}]*}'

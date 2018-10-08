@@ -6,6 +6,7 @@ begin
   proc;
   read(x,y,z);
   write(x,y,x+y);
-  if x then
-    write(x)
+  read(y);
+  if x = y then
+    write(x);
 end.
