@@ -1,5 +1,6 @@
 from sly import Parser
 from paslex import PascalLexer
+from astobjects import *
 
 
 
@@ -20,11 +21,11 @@ class PasParser(Parser):
 
     @_('PROGRAM identifier SEMICOLON block DOT')
     def program(self,p):
-        return p
+        return Program(p.identifier,p.block)
 
     @_('variable_declaration_part procedure_declaration_part statement_part')
     def block(self,p):
-        return p
+        return Block(p.variable_declaration_part,p.procedure_declaration_part,p.statement_part)
 
     @_('empty')
     def variable_declaration_part(self,p):
