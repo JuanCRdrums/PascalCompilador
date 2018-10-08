@@ -8,5 +8,5 @@ begin
   write(x,y,x+y);
   read(y);
   if x = y then
-    write(x);
+    write(x)
 end.

@@ -106,19 +106,15 @@ class PasParser(Parser):
     def statement_part(self,p):
         return p
 
-    @_('BEGIN list_statement END')
+    @_('BEGIN statement list_statement END')
     def compound_statement(self,p):
         return p
 
-    @_('statement list_statement')
+    @_('SEMICOLON statement list_statement')
     def list_statement(self,p):
         return p
 
     @_('empty')
-    def list_statement(self,p):
-        return p;
-
-    @_('SEMICOLON list_statement')
     def list_statement(self,p):
         return p
 
