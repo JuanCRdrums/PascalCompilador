@@ -16,7 +16,7 @@ if __name__ == '__main__':
                     print("ERROR: The file %r does not exist" % f)
                 print("-------------------------------------\n")
 
-        else:
+        elif sys.argv[1] == "-p":
             for f in files:
                 if os.path.isfile(f):
                     lexer = PascalLexer()
@@ -24,6 +24,8 @@ if __name__ == '__main__':
                     toopen = open(f)
                     code = toopen.read()
                     result = parser.parse(lexer.tokenize(code))
-                    print(result)
+                    if result:
+                        print("\n\nParser succesfully. Generated AST object:")
+                        print(result)
                 else:
                     print("ERROR: The file %r does not exist" % f)
