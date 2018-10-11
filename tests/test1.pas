@@ -1,4 +1,14 @@
 program test;
+var x,y,z : integer;
+c : char;
+procedure holi;
+begin
+  write("holi")
+end;
+procedure chau;
+begin
+  write("chau")
+end;
 begin
   x := 1;
   y := 2;
