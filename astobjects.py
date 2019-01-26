@@ -216,3 +216,47 @@ class Id:
 
 class Empty:
     pass
+
+class NodeVisitor(object):
+	def visit(self, node):
+		'''
+		Enecuta un metodo de la forma visit_NodeName(node) donde
+		NodeName es el nombre de la clase de un nodo particular.
+		if isinstance(node, list):
+			for item in node:
+				self.visit(item)
+		elif isinstance(node, AST):
+			method = 'visit_' + node.__class__.__name__
+			visitor = getattr(self, method, self.generic_visit)
+			visitor(node)
+		'''
+		attr = [i for i in node.__dict__.keys() if i[:1] != '_']
+		for i in attr:
+			print(i)
+
+	def generic_visit(self,node):
+		for field in getattr(node, '_fields'):
+			value = getattr(node, field, None)
+			self.visit(value)
+
+	@classmethod
+	def __init_subclass__(cls):
+		for key in vars(cls):
+			if key.startswith('visit_'):
+				assert key[6:] in globals(), f"{key} no coincide con nodos AST"
+
+# NO MODIFICAR
+def flatten(top):
+	class Flattener(NodeVisitor):
+		def __init__(self):
+			self.depth = 0
+			self.nodes = []
+		def generic_visit(self, node):
+			self.nodes.append((self.depth, node))
+			self.depth += 1
+			NodeVisitor.generic_visit(self, node)
+			self.depth -= 1
+
+	d = Flattener()
+	d.visit(top)
+	return d.nodes

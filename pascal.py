@@ -1,5 +1,6 @@
 from paslex import *
 from parser import *
+from astobjects import *
 import sys
 import os
 
@@ -26,6 +27,7 @@ if __name__ == '__main__':
                     result = parser.parse(lexer.tokenize(code))
                     if result:
                         print("\n\nParser succesfully. Generated AST object:")
-                        print(result)
+                        vis = NodeVisitor()
+                        print(vis.visit(result))
                 else:
                     print("ERROR: The file %r does not exist" % f)
