@@ -27,7 +27,7 @@ if __name__ == '__main__':
                     result = parser.parse(lexer.tokenize(code))
                     if result:
                         print("\n\nParser succesfully. Generated AST object:")
-                        vis = NodeVisitor()
-                        print(vis.visit(result))
+                        result.pprint()
+                        result.graphprint('astimage/test1.png')
                 else:
                     print("ERROR: The file %r does not exist" % f)

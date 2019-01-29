@@ -1,262 +1,364 @@
 from sly import Parser
+import pydot
+
+class AST(object):
+    _fields = []
+    def __init__(self,*args,**kwargs):
+        self.return_type = None
+        self.lineno = -1
+        self.gen_location= None
+        self.hasReturn = None
+        #
+        ####
+        assert len(args) == len(self._fields)
+        for name,value in zip(self._fields,args):
+            setattr(self,name,value)
+        if(len(kwargs)!=0):
+            for name,value in kwargs.items():
+                setattr(self,name,value)
+        else:
+            setattr(self,"_leaf",False)
+
+    def pprint(self):
+        for depth, node in flatten(self):
+            print("%s%s" % (" "*(4*depth),node))
+
+    def graphprint(self,name):
+        dotty=DotVisitor()
+        dotty.visit(self)
+        dotty.graph.write_png(name)
+        '''dot = DotVisitor()
+        print(dot)'''
+
+def validate_fields(**fields):
+    def validator(cls):
+        old_init = cls.__init__
+        def __init__(self, *args, **kwargs):
+            old_init(self, *args, **kwargs)
+            for field,expected_type in fields.items():
+                assert isinstance(getattr(self, field), expected_type)
+        cls.__init__ = __init__
+        return cls
+    return validator
 
 
 
-class Program:
-    def __init__(self,id,block):
-        self.id = id
-        self.block = block
+class Program(AST):
+    _fields = ['identifier','blocks']
 
-class Block:
-    def __init__(self,vardec,procdec,stat):
-        self.vardec = vardec
-        self.procdec = procdec
-        self.stat = stat
+class Block(AST):
+    _fields = ['variable_declaration_part','procedure_declaration_part','statement_part']
 
-class VariableDeclatarionPart:
-    def __init__(self,listDeclaration = None):
-        self.listDeclaration = listDeclaration
+class VariableDeclatarionPart(AST):
+    _fields = ['list_variable_declaration']
 
-class ListVariableDeclaration:
-    def __init__(self,varDeclaration = None,listVarDeclaration = None):
-        self.varDeclaration = varDeclaration
-        self.listVarDeclaration = listVarDeclaration
+#@validate_fields(variables = list)
+class ListVariableDeclaration(AST):
+    _fields = ['variables']
+    def append(self,e):
+        self.variables.append(e)
 
-class VarDeclaration:
-    def __init__(self,identifier = None,type = None,listIdentifier = None):
-        self.identifier = identifier
-        self.type = type
-        self.listIdentifier = listIdentifier
+class VarDeclaration(AST):
+    _fields = ['identifier','type','list_identifier']
 
-class ListIdentifier:
-    def __init__(self,identifier = None,listIdentifier = None):
-        self.identifier = identifier
-        self.listIdentifier = listIdentifier
+class ListIdentifier(AST):
+    _fields = ['identifier']
+    def append(self,e):
+        self.identifier.append(e)
 
-class Type:
-    def __init__(self,type):
-        self.type = type
+class Type(AST):
+    _fields = ['type']
 
-class ArrayType:
-    def __init__(self,indexRange,simpleType):
-        self.indexRange = indexRange
-        self.simpleType = simpleType
+class ArrayType(AST):
+    _fields = ['index_range','simple_type']
 
-class IndexRange:
-    def __init__(self,n1,n2):
-        self.n1 = n1
-        self.n2 = n2
+class IndexRange(AST):
+    _fields = ['n1','n2']
 
-class SimpleType:
-    def __init__(self,typeId):
-        self.typeId = typeId
+class SimpleType(AST):
+    _fields = ['type_identifier']
 
-class TypeIdentifier:
-    def __init__(self,id):
-        self.id = id
+class TypeIdentifier(AST):
+    _fields = ['identifier']
 
-class ListProcedureDeclaration:
-    def __init__(self,listProcedureDeclaration = None,procedureDeclaration = None):
-        self.listProcedureDeclaration = listProcedureDeclaration
-        self.procedureDeclaration = procedureDeclaration
+class ListProcedureDeclaration(AST):
+    _fields = ['list_procedure_declaration']
+    def append(self,e):
+        self.list_procedure_declaration.append(e)
 
-class ProcedureDeclaration:
-    def __init__(self,id,block):
-        self.id = id
-        self.block = block
+class ProcedureDeclaration(AST):
+    _fields = ['identifier','block']
 
-class StatementPart:
-    def __init__(self,compound):
-        self.compound = compound
+class StatementPart(AST):
+    _fields = ['compound_statement']
 
-class CompoundStatement:
-    def __init__(self,statement,listStatement):
-        self.statement = statement
-        self.listStatement = listStatement
+class CompoundStatement(AST):
+    _fields = ['statement','list_statement']
 
-class ListStatement:
-    def __init__(self,statement = None, listStatement = None):
-        self.statement = statement
-        self.listStatement = listStatement
+class ListStatement(AST):
+    _fields = ['list_statement']
+    def append(self,e):
+        self.list_statement.append(e)
 
-class Statement:
-    def __init__(self,statement):
-        self.statement = statement
+class Statement(AST):
+    _fields = ['statement']
 
-class SimpleStatement:
-    def __init__(self,statement):
-        self.statement = statement
+class SimpleStatement(AST):
+    _fields = ['statement']
 
-class AssignamentStatement:
-    def __init__(self,variable,expression):
-        self.variable = variable
-        self.expression = expression
+class AssignamentStatement(AST):
+    _fields = ['variable','expression']
 
-class ProcedureStatement:
-    def __init__(self,id):
-        self.id = id
+class ProcedureStatement(AST):
+    _fields = ['procedure_identifier']
 
-class ProcedureIdentifier:
-    def __init__(self,id):
-        self.id = id
+class ProcedureIdentifier(AST):
+    _fields = ['identifier']
 
-class ReadStatement:
-    def __init__(self,list):
-        self.list = list
+class ReadStatement(AST):
+    _fields = ['list_input_variable']
 
-class ListInputVariable:
-    def __init__(self,variable,list = None):
-        self.variable = variable
-        self.list = list
+class ListInputVariable(AST):
+    _fields = ['list_input_variable']
+    def append(self,e):
+        self.list_input_variable.append(e)
 
-class InputVariable:
-    def __init__(self,variable):
-        self.variable = variable
+class InputVariable(AST):
+    _fields = ['variable']
 
-class WriteStatement:
-    def __init__(self,list):
-        self.list = list
+class WriteStatement(AST):
+    _fields = ['list']
 
-class ListOutputValue:
-    def __init__(self,value,list = None):
-        self.value = value
-        self.list = list
+class ListOutputValue(AST):
+    _fields = ['list_output_value']
+    def append(self,e):
+        self.list_output_value.append(e)
 
-class OutputValue:
-    def __init__(self,expression):
-        self.expression = expression
+class OutputValue(AST):
+    _fields = ['expression']
 
-class StructuredStatement:
-    def __init__(self,statement):
-        self.statement = statement
+class StructuredStatement(AST):
+    _fields = ['statement']
 
-class IfStatement:
-    def __init__(self,expression,statement1,statement2 = None):
-        self.expression = expression
-        self.statement1 = statement1
-        self.statement2 = statement2
+class IfStatement(AST):
+    _fields = ['expression','statement1','statement2']
 
-class WhileStatement:
-    def __init__(self,expression,statement):
-        self.expression = expression
-        self.statement = statement
+class WhileStatement(AST):
+    _fields = ['expression','statement']
 
-class Expression:
-    def __init__(self,simple1,relational = None, simple2 = None):
-        self.simple1 = simple1
-        self.relational = relational
-        self.simple2 = simple2
+class Expression(AST):
+    _fields = ['simple1','relational','simple2']
 
-class SimpleExpression:
-    def __init__(self,sign,term,list):
-        self.sign = sign
-        self.term = term
-        self.list = list
+class SimpleExpression(AST):
+    _fields = ['sign','term','list']
 
-class ListAddingTerm:
-    def __init__(self,list = None,op = None,term = None):
-        self.list = list
-        self.op = op
-        self.term = term
+class ListAddingTerm(AST):
+    _fields = ['list']
+    def append(self,op,term):
+        self.list.append((op,term))
 
-class Term:
-    def __init__(self,factor,list):
-        self.factor = factor
-        self.list = list
+class Term(AST):
+    _fields = ['factor','list_mult_factor']
 
-class ListMultFactor:
-    def __init__(self,list = None,op = None,factor = None):
-        self.list = list
-        self.op = op
-        self.factor = factor
+class ListMultFactor(AST):
+    _fields = ['list_mult_factor']
+    def append(self,op,factor):
+        self.list_mult_factor.append((op,factor))
 
-class Factor:
-    def __init__(self,element):
-        self.element = element
+class Factor(AST):
+    _fields = ['element']
 
-class RelationalOperator:
-    def __init__(self,op):
-        self.op = op
+class RelationalOperator(AST):
+    _fields = ['op']
 
-class Sign:
-    def __init__(self,element = None):
-        self.element = element
+class Sign(AST):
+    _fields = ['element']
 
-class AddingOperator:
-    def __init__(self,element):
-        self.element = element
+class AddingOperator(AST):
+    _fields = ['element']
 
-class MultiplyingOperator:
-    def __init__(self,element):
-        self.element = element
+class MultiplyingOperator(AST):
+    _fields = ['element']
 
-class Variable:
-    def __init__(self,var):
-        self.var = var
+class Variable(AST):
+    _fields = ['var']
 
-class IndexedVariable:
-    def __init__(self,var,exp):
-        self.var = var
-        self.exp = exp
+class IndexedVariable(AST):
+    _fields = ['var','exp']
 
-class ArrayVariable:
-    def __init__(self,var):
-        self.var = var
+class ArrayVariable(AST):
+    _fields = ['var']
 
-class EntireVariable:
-    def __init__(self,var):
-        self.var = var
+class EntireVariable(AST):
+    _fields = ['var']
 
-class VarID:
-    def __init__(self,id):
-        self.id = id
-class Id:
-    def __init__(self,id):
-        self.id = id
+class VarID(AST):
+    _fields = ['id']
 
-class Empty:
+class Id(AST):
+    _fields = ['id']
+
+class Empty(AST):
     pass
 
+
+
+
+
 class NodeVisitor(object):
-	def visit(self, node):
-		'''
-		Enecuta un metodo de la forma visit_NodeName(node) donde
-		NodeName es el nombre de la clase de un nodo particular.
-		if isinstance(node, list):
-			for item in node:
-				self.visit(item)
-		elif isinstance(node, AST):
-			method = 'visit_' + node.__class__.__name__
-			visitor = getattr(self, method, self.generic_visit)
-			visitor(node)
-		'''
-		attr = [i for i in node.__dict__.keys() if i[:1] != '_']
-		for i in attr:
-			print(i)
+    def visit(self,node):
+        if node:
+            method = 'visit_' + node.__class__.__name__
+            visitor = getattr(self, method, self.generic_visit)
+            return visitor(node)
+        else:
+            return None
 
-	def generic_visit(self,node):
-		for field in getattr(node, '_fields'):
-			value = getattr(node, field, None)
-			self.visit(value)
+    def generic_visit(self,node):
+        for field in getattr(node,"_fields"):
+            value = getattr(node,field,None)
+            if isinstance(value, list):
+                for item in value:
+                    if isinstance(item,AST):
+                        self.visit(item)
+            elif isinstance(value, AST):
+                self.visit(value)
 
-	@classmethod
-	def __init_subclass__(cls):
-		for key in vars(cls):
-			if key.startswith('visit_'):
-				assert key[6:] in globals(), f"{key} no coincide con nodos AST"
+# NO MODIFICAR
+class NodeTransformer(NodeVisitor):
+    def generic_visit(self,node):
+        for field in getattr(node,"_fields"):
+            value = getattr(node,field,None)
+            if isinstance(value,list):
+                newvalues = []
+                for item in value:
+                    if isinstance(item,AST):
+                        newnode = self.visit(item)
+                        if newnode is not None:
+                            newvalues.append(newnode)
+                    else:
+                        newvalues.append(n)
+                value[:] = newvalues
+            elif isinstance(value,AST):
+                newnode = self.visit(value)
+                if newnode is None:
+                    delattr(node,field)
+                else:
+                    setattr(node,field,newnode)
+        return node
 
 # NO MODIFICAR
 def flatten(top):
-	class Flattener(NodeVisitor):
-		def __init__(self):
-			self.depth = 0
-			self.nodes = []
-		def generic_visit(self, node):
-			self.nodes.append((self.depth, node))
-			self.depth += 1
-			NodeVisitor.generic_visit(self, node)
-			self.depth -= 1
+    class Flattener(NodeVisitor):
+        def __init__(self):
+            self.depth = 0
+            self.nodes = []
+        def generic_visit(self,node):
+            self.nodes.append((self.depth,node))
+            self.depth += 1
+            NodeVisitor.generic_visit(self,node)
+            self.depth -= 1
 
-	d = Flattener()
-	d.visit(top)
-	return d.nodes
+    d = Flattener()
+    d.visit(top)
+    return d.nodes
+
+
+
+class DotVisitor():
+    graph = None
+    def __init__(self):
+        self.graph = pydot.Dot('AST', graph_type='digraph')
+        self.id=0
+    def ID(self):
+        self.id+=1
+        return self.id
+        #return "n%d" %self.id
+
+    def visit (self, node):
+        if node:
+            if(node._leaf):
+                newname=self.visit_leaf(node)
+            else:
+                method = 'visit_' + node.__class__.__name__
+                visitor = getattr(self, method, self.visit_non_leaf)
+                newname= visitor(node)
+
+        self.graph.add_node(newname)
+        return newname
+
+
+    def visit_color(self,node,node_name,node_id,color):
+        string= "N%d %s ( %s )" % (self.ID(), node_name, node_id)
+        name=pydot.Node(string,shape='box3d', style="filled", fillcolor=color)
+        for i in xrange (1,len(node._fields)):
+            if (not isinstance(getattr(node,node._fields[i]) , list) ):
+                newname=self.visit(getattr(node,node._fields[i]))
+                self.graph.add_edge(pydot.Edge(name, newname))
+            else:
+                for foo in getattr(node,node._fields[i]):
+                    if isinstance(foo,AST):
+                        newname = self.visit(foo)
+                        self.graph.add_edge(pydot.Edge(name, newname))
+        return name
+
+
+
+    def visit_non_leaf(self,node):
+        string= "N%d %s" % (self.ID(), node.__class__.__name__)
+        name=pydot.Node(string,shape='box3d', style="filled", fillcolor="#0066ff")
+        for field in getattr(node,"_fields"):
+            value = getattr(node,field,None)
+            if isinstance(value,list):
+                for item in value:
+                    if isinstance(item,AST):
+                        newname = self.visit(item)
+                        self.graph.add_edge(pydot.Edge(name, newname))
+
+
+            elif isinstance(value,AST):
+                newname = self.visit(value)
+                self.graph.add_edge(pydot.Edge(name, newname))
+        return name
+
+
+
+
+    def visit_leaf(self, node):
+        string = "L%d %s ( %s )" % (self.ID(), node.__class__.__name__, node.value)
+        return pydot.Node(string, shape='box3d',style="filled", fillcolor="#9ACD32")
+
+'''
+class DotVisitor(NodeVisitor):
+
+
+        def __init__(self):
+                self.dot =pgv.Dot('AST',graph_type='digraph')
+                self.dot.set_node_defaults(shape='box')
+                self.st = []
+                self.id =0
+
+        def __repr__(self):
+                return self.dot.to_string()
+
+        def name(self):
+                self.id+=1
+                return 'n%02d' % self.id
+
+        def generic_visit(self,node):
+                #siempre va a pasar poraca cada vez queeste en un nodo
+                id = self.name()
+                label = node.__class__.__name__
+                NodeVisitor.generic_visit(self,node)
+                for field in getattr(node,'_fields'):
+                        value=getattr(node,field,None)
+                        if isinstance (value,list):
+                                for item in value:
+                                        self.dot.add_edge(pgv.Edge(id,self.st.pop()))
+                        elif isinstance(value,AST):
+                                self.dot.add_edge(pgv.Edge(id), self.st.pop())
+                        elif value:
+                                label += '\\n' + '({}={})'.format(field,value)
+
+                self.dot.add_node(pgv.Node(id,label=label))
+                self.st.append(id)'''

@@ -30,7 +30,7 @@ class PasParser(Parser):
 
     @_('empty')
     def variable_declaration_part(self,p):
-        return VariableDeclatarionPart()
+        return Empty()
 
     @_('VAR list_variable_declaration')
     def variable_declaration_part(self,p):
@@ -38,15 +38,16 @@ class PasParser(Parser):
 
     @_('var_declaration SEMICOLON')
     def list_variable_declaration(self,p):
-        return ListVariableDeclaration(p.var_declaration)
+        return ListVariableDeclaration([p.var_declaration])
 
     @_('var_declaration SEMICOLON list_variable_declaration')
     def list_variable_declaration(self,p):
-        return ListVariableDeclaration(p.var_declaration,p.list_variable_declaration)
+        p.list_variable_declaration.append(p.var_declaration)
+        return ListVariableDeclaration(p.list_variable_declaration)
 
     @_('identifier COLON type')
     def var_declaration(self,p):
-        return VarDeclaration(p.identifier,p.type)
+        return VarDeclaration(p.identifier,p.type,None)
 
     @_('list_identifier COLON type')
     def var_declaration(self,p):
@@ -54,11 +55,12 @@ class PasParser(Parser):
 
     @_('identifier')
     def list_identifier(self,p):
-        return ListIdentifier(p.identifier)
+        return ListIdentifier([p.identifier])
 
     @_('identifier COMA list_identifier')
     def list_identifier(self,p):
-        return ListIdentifier(p.identifier,p.list_identifier)
+        p.list_identifier.append(p.identifier)
+        return ListIdentifier(p.list_identifier)
 
     @_('simple_type')
     def type(self,p):
@@ -90,15 +92,16 @@ class PasParser(Parser):
 
     @_('empty')
     def list_procedure_declaration(self,p):
-        return ListProcedureDeclaration()
+        return ListProcedureDeclaration([])
 
     @_('procedure_declaration SEMICOLON')
     def list_procedure_declaration(self,p):
-        return ListProcedureDeclaration(None,p.procedure_declaration)
+        return ListProcedureDeclaration([p.procedure_declaration])
 
     @_('list_procedure_declaration procedure_declaration SEMICOLON')
     def list_procedure_declaration(self,p):
-        return ListProcedureDeclaration(p.list_procedure_declaration,p.procedure_declaration)
+        p.list_procedure_declaration.append(p.procedure_declaration)
+        return ListProcedureDeclaration(p.list_procedure_declaration)
 
     @_('PROCEDURE ID SEMICOLON block')
     def procedure_declaration(self,p):
@@ -114,11 +117,12 @@ class PasParser(Parser):
 
     @_('SEMICOLON statement list_statement')
     def list_statement(self,p):
-        return ListStatement(p.statement,p.list_statement)
+        p.list_statement.append(p.statement)
+        return ListStatement(p.list_statement)
 
     @_('empty')
     def list_statement(self,p):
-        return ListStatement()
+        return ListStatement([])
 
     @_('simple_statement')
     def statement(self,p):
@@ -162,11 +166,12 @@ class PasParser(Parser):
 
     @_('input_variable')
     def list_input_variable(self,p):
-        return ListInputVariable(p.input_variable)
+        return ListInputVariable([p.input_variable])
 
     @_('list_input_variable COMA input_variable')
     def list_input_variable(self,p):
-        return ListInputVariable(p.input_variable,p.list_input_variable)
+        p.list_input_variable.append(p.input_variable)
+        return ListInputVariable(p.list_input_variable)
 
     @_('variable')
     def input_variable(self,p):
@@ -178,11 +183,12 @@ class PasParser(Parser):
 
     @_('output_value')
     def list_output_value(self,p):
-        return ListOutputValue(p.output_value)
+        return ListOutputValue([p.output_value])
 
     @_('list_output_value COMA output_value')
     def list_output_value(self,p):
-        return ListOutputValue(p.output_value,p.list_output_value)
+        p.list_output_value.append(p.output_value)
+        return ListOutputValue(p.list_output_value)
 
     @_('expression')
     def output_value(self,p):
@@ -202,7 +208,7 @@ class PasParser(Parser):
 
     @_('IF expression THEN statement')
     def if_statement(self,p):
-        return IfStatement(p.expression,p.statement)
+        return IfStatement(p.expression,p.statement,None)
 
     @_('IF expression THEN statement ELSE statement')
     def if_statement(self,p):
@@ -214,7 +220,7 @@ class PasParser(Parser):
 
     @_('simple_expression')
     def expression(self,p):
-        return Expression(p.simple_expression)
+        return Expression(p.simple_expression,None,None)
 
     @_('simple_expression relational_operator simple_expression')
     def expression(self,p):
@@ -226,11 +232,12 @@ class PasParser(Parser):
 
     @_('empty')
     def list_adding_term(self,p):
-        return ListAddingTerm()
+        return ListAddingTerm([])
 
     @_('list_adding_term adding_operator term')
     def list_adding_term(self,p):
-        return ListAddingTerm(p.list_adding_term,p.adding_operator,p.term)
+        p.list_adding_term.append(p.adding_operator,p.term)
+        return ListAddingTerm(p.list_adding_term)
 
     @_('factor list_mult_factor')
     def term(self,p):
@@ -238,11 +245,12 @@ class PasParser(Parser):
 
     @_('empty')
     def list_mult_factor(self,p):
-        return ListMultFactor()
+        return ListMultFactor([])
 
     @_('list_mult_factor multiplying_operator factor')
     def list_mult_factor(self,p):
-        return ListMultFactor(p.list_mult_factor,p.multiplying_operator,p.factor)
+        p.list_mult_factor.append(p.multiplying_operator,p.factor)
+        return ListMultFactor(p.list_mult_factor)
 
     @_('variable')
     def factor(self,p):
@@ -298,7 +306,7 @@ class PasParser(Parser):
 
     @_('empty')
     def sign(self,p):
-        return Sign()
+        return Sign(None)
 
     @_('PLUS')
     def adding_operator(self,p):
@@ -354,7 +362,7 @@ class PasParser(Parser):
     def identifier(self,p):
         line = p.lineno
         index = p.index
-        return Id(p)
+        return Id(p[0])
 
     @_('')
     def empty(self,p):
