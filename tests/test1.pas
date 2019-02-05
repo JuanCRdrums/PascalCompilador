@@ -13,7 +13,6 @@ begin
   x := -1*2 + (3 - 5);
   y := 2 div 3 div 5*3 - (3*5 + 2) div 2;
   z := 5;
-  proc;
   read(x,y,z);
   write(x,y,x+y);
   read(y);

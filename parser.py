@@ -1,7 +1,6 @@
 from sly import Parser
 from paslex import PascalLexer
 from astobjects import *
-from astmonkey import visitors,transformers
 
 
 
@@ -24,9 +23,38 @@ class PasParser(Parser):
     def program(self,p):
         return Program(p.identifier,p.block)
 
-    @_('variable_declaration_part procedure_declaration_part statement_part')
+    @_('constant_declaration_part variable_declaration_part procedure_declaration_part function_declaration_part statement_part')
     def block(self,p):
-        return Block(p.variable_declaration_part,p.procedure_declaration_part,p.statement_part)
+        return Block(p.constant_declaration_part,p.variable_declaration_part,p.procedure_declaration_part,p.function_declaration_part,p.statement_part)
+
+    @_('empty')
+    def constant_declaration_part(self,p):
+        return ConstantDeclarationPart([])
+
+    @_('CONST list_constant_definition')
+    def constant_declaration_part(self,p):
+        return ConstantDeclarationPart(p.list_constant_definition)
+
+    @_('constant_definition SEMICOLON')
+    def list_constant_definition(self,p):
+        return ListConstantDefinition([p.constant_definition])
+
+    @_('constant_definition SEMICOLON list_constant_definition')
+    def list_constant_definition(self,p):
+        p.list_constant_definition.append(p[0])
+        return ListConstantDefinition(p.list_constant_definition)
+
+    @_('identifier EQ INTCONST')
+    def constant_definition(self,p):
+        return ConstantDefinition(p.identifier,p[2])
+
+    @_('identifier EQ CHARCONST')
+    def constant_definition(self,p):
+        return ConstantDefinition(p.identifier,p[2])
+
+    @_('identifier EQ identifier')
+    def constant_definition(self,p):
+        return ConstantDefinition(p[0],p[2])
 
     @_('empty')
     def variable_declaration_part(self,p):
@@ -107,6 +135,61 @@ class PasParser(Parser):
     def procedure_declaration(self,p):
         return ProcedureDeclaration(p[1],p.block)
 
+    @_('list_function_declaration')
+    def function_declaration_part(self,p):
+        return FunctionDeclarationPart(p.list_function_declaration)
+
+    @_('empty')
+    def list_function_declaration(self,p):
+        return ListFunctionDeclaration([])
+
+    @_('function_declaration SEMICOLON')
+    def list_function_declaration(self,p):
+        return ListFunctionDeclaration([p.function_declaration])
+
+    @_('list_function_declaration function_declaration SEMICOLON')
+    def list_function_declaration(self,p):
+        p.list_function_declaration.append(p.function_declaration)
+        return ListFunctionDeclaration(p.list_function_declaration)
+
+    @_('FUNCTION identifier formal_parameter COLON type_identifier SEMICOLON block')
+    def function_declaration(self,p):
+        return FunctionDeclaration(p.identifier,p.formal_parameter,p.type_identifier,p.block)
+
+    @_('LPAR list_formal_parameter RPAR')
+    def formal_parameter(self,p):
+        return FormalParameter(p.list_formal_parameter)
+
+    @_('formal_parameter_section')
+    def list_formal_parameter(self,p):
+        return ListFormalParameter([p.formal_parameter_section])
+
+    @_('list_formal_parameter SEMICOLON formal_parameter_section')
+    def list_formal_parameter(self,p):
+        p.list_formal_parameter.append(p.formal_parameter_section)
+        return ListFormalParameter(p.list_formal_parameter)
+
+    @_('parameter_group')
+    def formal_parameter_section(self,p):
+        return FormalParameterSection(p.parameter_group)
+
+    @_('VAR parameter_group')
+    def formal_parameter_section(self,p):
+        return FormalParameterSection(p.parameter_group)
+
+    @_('FUNCTION parameter_group')
+    def formal_parameter_section(self,p):
+        return FormalParameterSection(p.parameter_group)
+
+    @_('PROCEDURE parameter_group')
+    def formal_parameter_section(self,p):
+        return FormalParameterSection(p.parameter_group)
+
+    @_('list_identifier COLON type_identifier')
+    def parameter_group(self,p):
+        return ParameterGroup(p.list_identifier,p.type_identifier)
+
+
     @_('compound_statement')
     def statement_part(self,p):
         return StatementPart(p.compound_statement)
@@ -152,9 +235,31 @@ class PasParser(Parser):
     def assignament_statement(self,p):
         return AssignamentStatement(p.variable,p.expression)
 
+    @_('procedure_identifier LPAR parameter_list RPAR')
+    def procedure_statement(self,p):
+        return ProcedureStatement(p.procedure_identifier,p.parameter_list)
+
     @_('procedure_identifier')
     def procedure_statement(self,p):
-        return ProcedureStatement(p.procedure_identifier)
+        return ProcedureStatement(p.procedure_identifier,[])
+
+    @_('actual_parameter')
+    def parameter_list(self,p):
+        return ParameterList([p.actual_parameter])
+
+    @_('parameter_list COMA actual_parameter')
+    def parameter_list(self,p):
+        p.parameter_list.append(p.actual_parameter)
+        return ParameterList(p.parameter_list)
+
+    @_('expression')
+    def actual_parameter(self,p):
+        return ActualParameter([p.expression])
+
+    @_('actual_parameter COLON expression')
+    def actual_parameter(self,p):
+        p.actual_parameter.append(p.expression)
+        return ActualParameter(p.actual_parameter)
 
     @_('identifier')
     def procedure_identifier(self,p):
@@ -271,6 +376,10 @@ class PasParser(Parser):
     @_('NOT factor')
     def factor(self,p):
         return FactorNot(p[1],p[0])
+
+    @_('procedure_statement')
+    def factor(self,p):
+        return Factor(p.procedure_statement)
 
     @_('EQ')
     def relational_operator(self,p):

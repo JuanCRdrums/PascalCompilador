@@ -4,7 +4,7 @@ class PascalLexer(Lexer):
 
     keywords = { 'program', 'var', 'array', 'of', 'procedure', 'begin', 'end',
                 'write', 'read', 'if', 'then', 'else', 'while', 'do', 'not',
-                'or', 'div', 'and'}
+                'or', 'div', 'and','const','function'}
     tokens = { ID, INTCONST, CHARCONST, *{kw.upper() for kw in keywords},
                 PLUS, MINUS, TIMES, EQ, NE, LT, GT, LE, GE, LPAR, RPAR, LBR,
                 RBR, ASSIGN, DOT, COMA, SEMICOLON, COLON }
@@ -21,12 +21,12 @@ class PascalLexer(Lexer):
     PLUS = r'\+'
     MINUS = r'\-'
     TIMES = r'\*'
+    LE = r'<='
+    GE = r'>='
     EQ = r'='
     NE = r'<>'
     LT = r'<'
     GT = r'>'
-    LE = r'<='
-    GE = r'>='
     LPAR = r'\('
     RPAR = r'\)'
     LBR = r'\['

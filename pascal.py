@@ -25,9 +25,14 @@ if __name__ == '__main__':
                     toopen = open(f)
                     code = toopen.read()
                     result = parser.parse(lexer.tokenize(code))
+                    fSplit = f.split('/')
+                    fPas = fSplit[-1]
+                    fPasSplit = fPas.split('.')
+                    nameFile = fPasSplit[0]
+                    pathJPG = "astimage/" + nameFile + ".png"
                     if result:
-                        print("\n\nParser succesfully. Generated AST object:")
-                        result.pprint()
-                        result.graphprint('astimage/test1.png')
+                        print("\n\nParser succesfully. AST file's path:")
+                        print(pathJPG)
+                        result.graphprint(pathJPG)
                 else:
                     print("ERROR: The file %r does not exist" % f)

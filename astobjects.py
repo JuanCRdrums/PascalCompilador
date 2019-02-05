@@ -49,7 +49,18 @@ class Program(AST):
     _fields = ['identifier','blocks']
 
 class Block(AST):
-    _fields = ['variable_declaration_part','procedure_declaration_part','statement_part']
+    _fields = ['constant_declaration_part','variable_declaration_part','procedure_declaration_part', 'function_declaration_part','statement_part']
+
+class ConstantDeclarationPart(AST):
+    _fields = ['list_constant_definition']
+
+class ListConstantDefinition(AST):
+    _fields = ['constants']
+    def append(self,e):
+        self.constants.append(e)
+
+class ConstantDefinition(AST):
+    _fields = ['id','constant']
 
 class VariableDeclatarionPart(AST):
     _fields = ['list_variable_declaration']
@@ -91,6 +102,31 @@ class ListProcedureDeclaration(AST):
 class ProcedureDeclaration(AST):
     _fields = ['identifier','block']
 
+class FunctionDeclarationPart(AST):
+    _fields = ['list_function_declaration']
+
+class ListFunctionDeclaration(AST):
+    _fields = ['list_function_declaration']
+    def append(self,e):
+        self.list_function_declaration.append(e)
+
+class FunctionDeclaration(AST):
+    _fields = ['identifier','formal_parameter','type_identifier','block']
+
+class FormalParameter(AST):
+    _fields = ['list_formal_parameter']
+
+class ListFormalParameter(AST):
+    _fields = ['list_formal_parameter']
+    def append(self,e):
+        self.list_formal_parameter.append(e)
+
+class FormalParameterSection(AST):
+    _fields = ['parameter_group']
+
+class ParameterGroup(AST):
+    _fields = ['list_identifier','type_identifier']
+
 class StatementPart(AST):
     _fields = ['compound_statement']
 
@@ -112,10 +148,20 @@ class AssignamentStatement(AST):
     _fields = ['variable','expression']
 
 class ProcedureStatement(AST):
-    _fields = ['procedure_identifier']
+    _fields = ['procedure_identifier','parameter_list']
+
+class ParameterList(AST):
+    _fields = ['actual_parameter']
+    def append(self,e):
+        self.actual_parameter.append(e)
+
+class ActualParameter(AST):
+    _fields = ['actual_parameter']
 
 class ProcedureIdentifier(AST):
     _fields = ['identifier']
+    def append(self,e):
+        self.actual_parameter.append(e)
 
 class ReadStatement(AST):
     _fields = ['list_input_variable']
