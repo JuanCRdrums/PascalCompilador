@@ -23,4 +23,4 @@ python3 pascal.py -p archivo [archivo]*
 ```
 Esta opción es para ejecutar el análisis sintáctico y ver su resultado.
 
-**NOTA:** El analizador sintáctico, internamente, almacena toda la información en clases que simulan el árbol de sintaxis abstracto (AST). Esto quiere decir que, en la presente entrega, la información del AST ya está *cargada*. Sin embargo, este compilador aún no genera el archivo .dot del AST.
+**NOTA:** En su funcionamiento por defecto, el analizador sintáctico genera el objeto de tipo AST en memoria y genera una imagen ubicada en el directorio /astimage en formato jpg con el mismo nombre del programa de prueba.
