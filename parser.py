@@ -232,12 +232,12 @@ class PasParser(Parser):
 
     @_('empty')
     def list_adding_term(self,p):
-        return ListAddingTerm([])
+        return ListAddingTerm([],None)
 
     @_('list_adding_term adding_operator term')
     def list_adding_term(self,p):
-        p.list_adding_term.append(p.adding_operator,p.term)
-        return ListAddingTerm(p.list_adding_term)
+        p.list_adding_term.append(p.term)
+        return ListAddingTerm(p.list_adding_term,p.adding_operator)
 
     @_('factor list_mult_factor')
     def term(self,p):
@@ -245,32 +245,32 @@ class PasParser(Parser):
 
     @_('empty')
     def list_mult_factor(self,p):
-        return ListMultFactor([])
+        return ListMultFactor([],None)
 
     @_('list_mult_factor multiplying_operator factor')
     def list_mult_factor(self,p):
-        p.list_mult_factor.append(p.multiplying_operator,p.factor)
-        return ListMultFactor(p.list_mult_factor)
+        p.list_mult_factor.append(p.factor)
+        return ListMultFactor(p.list_mult_factor,p.multiplying_operator)
 
     @_('variable')
     def factor(self,p):
-        return Factor(p.variable)
+        return FactorVariable(p[0])
 
     @_('INTCONST')
     def factor(self,p):
-        return Factor(p)
+        return Factor(p[0],_leaf = True)
 
     @_('CHARCONST')
     def factor(self,p):
-        return Factor(p)
+        return Factor(p[0],_leaf = True)
 
     @_('LPAR expression RPAR')
     def factor(self,p):
-        return Factor(p.expression)
+        return FactorPar(p[1],p[0],p[2])
 
     @_('NOT factor')
     def factor(self,p):
-        return Factor(p.factor)
+        return FactorNot(p[1],p[0])
 
     @_('EQ')
     def relational_operator(self,p):
@@ -298,11 +298,11 @@ class PasParser(Parser):
 
     @_('PLUS')
     def sign(self,p):
-        return Sign(p)
+        return Sign(p[0],_leaf = True)
 
     @_('MINUS')
     def sign(self,p):
-        return Sign(p)
+        return Sign(p[0],_leaf = True)
 
     @_('empty')
     def sign(self,p):
@@ -310,27 +310,27 @@ class PasParser(Parser):
 
     @_('PLUS')
     def adding_operator(self,p):
-        return AddingOperator(p)
+        return AddingOperator(p[0],_leaf = True)
 
     @_('MINUS')
     def adding_operator(self,p):
-        return AddingOperator(p)
+        return AddingOperator(p[0],_leaf = True)
 
     @_('OR')
     def adding_operator(self,p):
-        return AddingOperator(p)
+        return AddingOperator(p[0],_leaf = True)
 
     @_('TIMES')
     def multiplying_operator(self,p):
-        return MultiplyingOperator(p)
+        return MultiplyingOperator(p[0],_leaf = True)
 
     @_('DIV')
     def multiplying_operator(self,p):
-        return MultiplyingOperator(p)
+        return MultiplyingOperator(p[0],_leaf = True)
 
     @_('AND')
     def multiplying_operator(self,p):
-        return MultiplyingOperator(p)
+        return MultiplyingOperator(p[0],_leaf = True)
 
     @_('entire_variable')
     def variable(self,p):
@@ -356,13 +356,13 @@ class PasParser(Parser):
     def variable_identifier(self,p):
         line = p.lineno
         index = p.index
-        return VarID(p)
+        return VarID(p[0],_leaf = True)
 
     @_('ID')
     def identifier(self,p):
         line = p.lineno
         index = p.index
-        return Id(p[0])
+        return Id(p[0],_leaf = True)
 
     @_('')
     def empty(self,p):

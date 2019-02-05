@@ -18,6 +18,8 @@ class AST(object):
                 setattr(self,name,value)
         else:
             setattr(self,"_leaf",False)
+        if not self._fields:
+            del self
 
     def pprint(self):
         for depth, node in flatten(self):
@@ -153,32 +155,41 @@ class SimpleExpression(AST):
     _fields = ['sign','term','list']
 
 class ListAddingTerm(AST):
-    _fields = ['list']
-    def append(self,op,term):
-        self.list.append((op,term))
+    _fields = ['list','op']
+    def append(self,term):
+        self.list.append(term)
 
 class Term(AST):
     _fields = ['factor','list_mult_factor']
 
 class ListMultFactor(AST):
-    _fields = ['list_mult_factor']
-    def append(self,op,factor):
-        self.list_mult_factor.append((op,factor))
+    _fields = ['list_mult_factor','op']
+    def append(self,factor):
+        self.list_mult_factor.append(factor)
 
 class Factor(AST):
+    _fields = ['value']
+
+class FactorVariable(AST):
     _fields = ['element']
+
+class FactorPar(AST):
+    _fields = ['factor','lpar','rpar']
+
+class FactorNot(AST):
+    _fields = ['factor','not']
 
 class RelationalOperator(AST):
     _fields = ['op']
 
 class Sign(AST):
-    _fields = ['element']
+    _fields = ['value']
 
 class AddingOperator(AST):
-    _fields = ['element']
+    _fields = ['value']
 
 class MultiplyingOperator(AST):
-    _fields = ['element']
+    _fields = ['value']
 
 class Variable(AST):
     _fields = ['var']
@@ -193,13 +204,13 @@ class EntireVariable(AST):
     _fields = ['var']
 
 class VarID(AST):
-    _fields = ['id']
+    _fields = ['value']
 
 class Id(AST):
-    _fields = ['id']
+    _fields = ['value']
 
 class Empty(AST):
-    pass
+    _fields = []
 
 
 
