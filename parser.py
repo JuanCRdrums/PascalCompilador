@@ -75,6 +75,7 @@ class PasParser(Parser):
 
     @_('identifier COLON type')
     def var_declaration(self,p):
+        p.identifier._leafDec = True
         return VarDeclaration(p.identifier,p.type,None)
 
     @_('list_identifier COLON type')
@@ -215,9 +216,13 @@ class PasParser(Parser):
     def statement(self,p):
         return Statement(p.structured_statement)
 
-    @_('assignament_statement')
+    @_('assignament_statement_entire')
     def simple_statement(self,p):
-        return SimpleStatement(p.assignament_statement)
+        return SimpleStatement(p.assignament_statement_entire)
+
+    @_('assignament_statement_array')
+    def simple_statement(self,p):
+        return SimpleStatement(p.assignament_statement_array)
 
     @_('procedure_statement')
     def simple_statement(self,p):
@@ -231,9 +236,14 @@ class PasParser(Parser):
     def simple_statement(self,p):
         return SimpleStatement(p.write_statement)
 
-    @_('variable ASSIGN expression')
-    def assignament_statement(self,p):
-        return AssignamentStatement(p.variable,p.expression)
+    @_('identifier ASSIGN expression')
+    def assignament_statement_entire(self,p):
+        p.identifier._leafBlue = True
+        return AssignamentStatementEntire(p.identifier,p.expression)
+
+    @_('indexed_variable ASSIGN expression')
+    def assignament_statement_array(self,p):
+        return AssignamentStatementArray(p.indexed_variable,p.expression)
 
     @_('procedure_identifier LPAR parameter_list RPAR')
     def procedure_statement(self,p):
@@ -363,11 +373,11 @@ class PasParser(Parser):
 
     @_('INTCONST')
     def factor(self,p):
-        return Factor(p[0],_leaf = True)
+        return Factor(p[0])
 
     @_('CHARCONST')
     def factor(self,p):
-        return Factor(p[0],_leaf = True)
+        return Factor(p[0])
 
     @_('LPAR expression RPAR')
     def factor(self,p):
@@ -407,11 +417,11 @@ class PasParser(Parser):
 
     @_('PLUS')
     def sign(self,p):
-        return Sign(p[0],_leaf = True)
+        return Sign(p[0])
 
     @_('MINUS')
     def sign(self,p):
-        return Sign(p[0],_leaf = True)
+        return Sign(p[0])
 
     @_('empty')
     def sign(self,p):
@@ -419,27 +429,27 @@ class PasParser(Parser):
 
     @_('PLUS')
     def adding_operator(self,p):
-        return AddingOperator(p[0],_leaf = True)
+        return AddingOperator(p[0])
 
     @_('MINUS')
     def adding_operator(self,p):
-        return AddingOperator(p[0],_leaf = True)
+        return AddingOperator(p[0])
 
     @_('OR')
     def adding_operator(self,p):
-        return AddingOperator(p[0],_leaf = True)
+        return AddingOperator(p[0])
 
     @_('TIMES')
     def multiplying_operator(self,p):
-        return MultiplyingOperator(p[0],_leaf = True)
+        return MultiplyingOperator(p[0])
 
     @_('DIV')
     def multiplying_operator(self,p):
-        return MultiplyingOperator(p[0],_leaf = True)
+        return MultiplyingOperator(p[0])
 
     @_('AND')
     def multiplying_operator(self,p):
-        return MultiplyingOperator(p[0],_leaf = True)
+        return MultiplyingOperator(p[0])
 
     @_('entire_variable')
     def variable(self,p):
@@ -459,13 +469,14 @@ class PasParser(Parser):
 
     @_('variable_identifier')
     def entire_variable(self,p):
+        p.variable_identifier._leafRed = True
         return EntireVariable(p.variable_identifier)
 
     @_('ID')
     def variable_identifier(self,p):
         line = p.lineno
         index = p.index
-        return VarID(p[0],_leaf = True)
+        return VarID(p[0])
 
     @_('ID')
     def identifier(self,p):

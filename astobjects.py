@@ -16,10 +16,10 @@ class AST(object):
         if(len(kwargs)!=0):
             for name,value in kwargs.items():
                 setattr(self,name,value)
-        else:
-            setattr(self,"_leaf",False)
-        if not self._fields:
-            del self
+        setattr(self,"_leafDec",False)
+        setattr(self,"_leafRed",False)
+        setattr(self,"_leafBlue",False)
+        setattr(self,"_leaf",False)
 
     def pprint(self):
         for depth, node in flatten(self):
@@ -144,8 +144,11 @@ class Statement(AST):
 class SimpleStatement(AST):
     _fields = ['statement']
 
-class AssignamentStatement(AST):
+class AssignamentStatementArray(AST):
     _fields = ['variable','expression']
+
+class AssignamentStatementEntire(AST):
+    _fields = ['identifier','expression']
 
 class ProcedureStatement(AST):
     _fields = ['procedure_identifier','parameter_list']
@@ -334,8 +337,14 @@ class DotVisitor():
 
     def visit (self, node):
         if node:
-            if(node._leaf):
-                newname=self.visit_leaf(node)
+            if(node._leafDec):
+                newname = self.visit_leafDec(node)
+            elif(node._leafRed):
+                newname = self.visit_leafRed(node)
+            elif(node._leafBlue):
+                newname = self.visit_leafBlue(node)
+            elif(node._leaf):
+                newname = self.visit_leaf(node)
             else:
                 method = 'visit_' + node.__class__.__name__
                 visitor = getattr(self, method, self.visit_non_leaf)
@@ -363,7 +372,7 @@ class DotVisitor():
 
     def visit_non_leaf(self,node):
         string= "N%d %s" % (self.ID(), node.__class__.__name__)
-        name=pydot.Node(string,shape='box3d', style="filled", fillcolor="#0066ff")
+        name=pydot.Node(string,shape='box3d', style="filled", fillcolor="#ffffff")
         for field in getattr(node,"_fields"):
             value = getattr(node,field,None)
             if isinstance(value,list):
@@ -381,9 +390,21 @@ class DotVisitor():
 
 
 
-    def visit_leaf(self, node):
+    def visit_leafBlue(self, node):
+        string = "L%d %s ( %s )" % (self.ID(), node.__class__.__name__, node.value)
+        return pydot.Node(string, shape='box3d',style="filled", fillcolor="#0000ff")
+
+    def visit_leafDec(self, node):
         string = "L%d %s ( %s )" % (self.ID(), node.__class__.__name__, node.value)
         return pydot.Node(string, shape='box3d',style="filled", fillcolor="#9ACD32")
+
+    def visit_leafRed(self, node):
+        string = "L%d %s ( %s )" % (self.ID(), node.__class__.__name__, node.value)
+        return pydot.Node(string, shape='box3d',style="filled", fillcolor="#fd0000")
+
+    def visit_leaf(self, node):
+        string = "L%d %s ( %s )" % (self.ID(), node.__class__.__name__, node.value)
+        return pydot.Node(string, shape='box3d',style="filled", fillcolor="#ffffff")
 
 '''
 class DotVisitor(NodeVisitor):
