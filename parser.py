@@ -351,8 +351,9 @@ class PasParser(Parser):
 
     @_('list_adding_term adding_operator term')
     def list_adding_term(self,p):
-        p.list_adding_term.append(p.term)
-        return ListAddingTerm(p.list_adding_term,p.adding_operator)
+        #p.list_adding_term.append(p.term)
+        #return ListAddingTerm(p.list_adding_term,p.adding_operator)
+        return BinaryOp(p.adding_operator,p.list_adding_term,p.term)
 
     @_('factor list_mult_factor')
     def term(self,p):
@@ -373,11 +374,11 @@ class PasParser(Parser):
 
     @_('INTCONST')
     def factor(self,p):
-        return Factor(p[0])
+        return Factor(p[0],_leaf = True)
 
     @_('CHARCONST')
     def factor(self,p):
-        return Factor(p[0])
+        return Factor(p[0],_leaf = True)
 
     @_('LPAR expression RPAR')
     def factor(self,p):
@@ -429,27 +430,27 @@ class PasParser(Parser):
 
     @_('PLUS')
     def adding_operator(self,p):
-        return AddingOperator(p[0])
+        return AddingOperator(p[0],_leaf = True)
 
     @_('MINUS')
     def adding_operator(self,p):
-        return AddingOperator(p[0])
+        return AddingOperator(p[0],_leaf = True)
 
     @_('OR')
     def adding_operator(self,p):
-        return AddingOperator(p[0])
+        return AddingOperator(p[0],_leaf = True)
 
     @_('TIMES')
     def multiplying_operator(self,p):
-        return MultiplyingOperator(p[0])
+        return MultiplyingOperator(p[0],_leaf = True)
 
     @_('DIV')
     def multiplying_operator(self,p):
-        return MultiplyingOperator(p[0])
+        return MultiplyingOperator(p[0],_leaf = True)
 
     @_('AND')
     def multiplying_operator(self,p):
-        return MultiplyingOperator(p[0])
+        return MultiplyingOperator(p[0],_leaf = True)
 
     @_('entire_variable')
     def variable(self,p):
@@ -476,7 +477,13 @@ class PasParser(Parser):
     def variable_identifier(self,p):
         line = p.lineno
         index = p.index
-        return VarID(p[0])
+        """if(p._leafRed):
+            return VarId(p[0],_leafRed = True)
+        if(p._leafDec):
+            return VarId(p[0],_leafDec = True)
+        if(p._leafBlue):
+            return VarId(p[0],_leafBlue = True)"""
+        return VarID(p[0],_leaf = True)
 
     @_('ID')
     def identifier(self,p):

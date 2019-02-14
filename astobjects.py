@@ -16,10 +16,14 @@ class AST(object):
         if(len(kwargs)!=0):
             for name,value in kwargs.items():
                 setattr(self,name,value)
-        setattr(self,"_leafDec",False)
+        else:
+            setattr(self,"_leaf",False)
+
+        """setattr(self,"_leafDec",False)
         setattr(self,"_leafRed",False)
-        setattr(self,"_leafBlue",False)
-        setattr(self,"_leaf",False)
+        setattr(self,"_leafBlue",False)"""
+
+        #setattr(self,"_leaf",False)
 
     def pprint(self):
         for depth, node in flatten(self):
@@ -261,6 +265,12 @@ class Id(AST):
 class Empty(AST):
     _fields = []
 
+class BinaryOp(AST):
+    _fields = ['op','left','right']
+
+class UnaryOp(AST):
+    _fields = ['op','value']
+
 
 
 
@@ -337,14 +347,14 @@ class DotVisitor():
 
     def visit (self, node):
         if node:
-            if(node._leafDec):
-                newname = self.visit_leafDec(node)
+            if(node._leaf):
+                newname = self.visit_leaf(node)
             elif(node._leafRed):
                 newname = self.visit_leafRed(node)
             elif(node._leafBlue):
                 newname = self.visit_leafBlue(node)
-            elif(node._leaf):
-                newname = self.visit_leaf(node)
+            elif(node._leafDec):
+                newname = self.visit_leafDec(node)
             else:
                 method = 'visit_' + node.__class__.__name__
                 visitor = getattr(self, method, self.visit_non_leaf)
