@@ -18,10 +18,11 @@ class AST(object):
                 setattr(self,name,value)
         else:
             setattr(self,"_leaf",False)
+            setattr(self,"_leafDec",False)
+            setattr(self,"_leafRed",False)
+            setattr(self,"_leafBlue",False)
 
-        """setattr(self,"_leafDec",False)
-        setattr(self,"_leafRed",False)
-        setattr(self,"_leafBlue",False)"""
+
 
         #setattr(self,"_leaf",False)
 

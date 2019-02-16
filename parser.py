@@ -19,6 +19,10 @@ class PasParser(Parser):
 
     start = 'program'
 
+    _leafRed = False
+    _leafDec = False
+    _leafBlue = False
+
     @_('PROGRAM identifier SEMICOLON block DOT')
     def program(self,p):
         return Program(p.identifier,p.block)
@@ -75,7 +79,7 @@ class PasParser(Parser):
 
     @_('identifier COLON type')
     def var_declaration(self,p):
-        p.identifier._leafDec = True
+        self._leafDec = True
         return VarDeclaration(p.identifier,p.type,None)
 
     @_('list_identifier COLON type')
@@ -238,7 +242,7 @@ class PasParser(Parser):
 
     @_('identifier ASSIGN expression')
     def assignament_statement_entire(self,p):
-        p.identifier._leafBlue = True
+        self._leafBlue = True
         return AssignamentStatementEntire(p.identifier,p.expression)
 
     @_('indexed_variable ASSIGN expression')
@@ -470,19 +474,22 @@ class PasParser(Parser):
 
     @_('variable_identifier')
     def entire_variable(self,p):
-        p.variable_identifier._leafRed = True
+        self._leafRed = True
         return EntireVariable(p.variable_identifier)
 
     @_('ID')
     def variable_identifier(self,p):
         line = p.lineno
         index = p.index
-        """if(p._leafRed):
-            return VarId(p[0],_leafRed = True)
-        if(p._leafDec):
-            return VarId(p[0],_leafDec = True)
-        if(p._leafBlue):
-            return VarId(p[0],_leafBlue = True)"""
+        if(self._leafRed):
+            self._leafRed = False
+            return VarID(p[0],_leafRed = True,_leaf = False,_leafBlue = False,_leafDec = False)
+        if(self._leafDec):
+            self._leafDec = False
+            return VarID(p[0],_leafDec = True,_leaf = False,_leafBlue = False,_leafRed = False)
+        if(self._leafBlue):
+            self._leafBlue = False
+            return VarID(p[0],_leafBlue = True,_leaf = False,_leafRed = False,_leafDec = False)
         return VarID(p[0],_leaf = True)
 
     @_('ID')
