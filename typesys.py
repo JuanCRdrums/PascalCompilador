@@ -1,30 +1,83 @@
 
-ARITHM_OPS = ["PLUS","MINUS","TIMES","DIV"]
-
-REL_OPS = ["EQ","NE","LT","GT","LE","GE"]
-
-BOOL_OPS = ["AND","OR"]
-
-class Type():
-    @classmethod
-    def binOpType(cls,op, rightType):
-        return None
-
-    @classmethod
-    def unaryOpType(cls,typeName):
-        return None
-
-    @classmethod
-    def getByName(cls,typeName):
-        for type_cls in cls.__subclasses__():
-            if type_cls.name == typeName:
-                return type_cls
-        return None
-
-
-class FloatType(Type):
-    name = "float"
-
-    @classmethod
-    def binop_type(cls,op,rightType):
-        
+
+ARITHM_BIN_OPS = ["+", "-", "*", "/"]
+
+REL_BIN_OPS = ["<", "<=", ">", ">=", "==", "!="]
+
+BOOL_BIN_OPS = ["&&", "||", "==", "!="]
+BOOL_UNARY_OPS = ["!"]
+
+class Type():
+	'''
+	Clase base para nuestro sistema de tipos
+	'''
+
+	@classmethod
+	def binop_type(cls, op, right_type):
+		'''
+		Devuelve el tipo al aplicar el operador binario con el
+		actual tipo y el tipo del operando derecho, o devuelve
+		None si la operación no es válida
+		'''
+		return None
+
+
+	@classmethod
+	def get_by_name(cls, type_name):
+		for type_cls in cls.__subclasses__():
+			if type_cls.name == type_name:
+				return type_cls
+
+		return None
+
+class RealType(Type):
+	name = "real"
+
+	@classmethod
+	def binop_type(cls, op, right_type):
+		if issubclass(right_type, RealType):
+			if op in ARITHM_BIN_OPS:
+				return RealType
+			elif op in REL_BIN_OPS:
+				return BoolType
+
+		return None
+
+
+
+class IntType(Type):
+	name = "int"
+
+	@classmethod
+	def binop_type(cls, op, right_type):
+		if issubclass(right_type, IntType):
+			if op in ARITHM_BIN_OPS:
+				return IntType
+			elif op in REL_BIN_OPS:
+				return BoolType
+
+		return None
+
+
+class CharType(Type):
+	name = "char"
+
+	@classmethod
+	def binop_type(cls, op, right_type):
+		if issubclass(right_type, CharType):
+			if op in REL_BIN_OPS:
+				return BoolType
+
+		return None
+
+
+class BoolType(Type):
+	name = "bool"
+
+	@classmethod
+	def binop_type(cls, op, right_type):
+		if issubclass(right_type, BoolType) and op in BOOL_BIN_OPS:
+			return BoolType
+
+		return None
+
