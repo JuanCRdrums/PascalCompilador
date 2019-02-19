@@ -136,34 +136,23 @@ class CheckProgramVisitor(NodeVisitor):
 		self.keywords = {t.name for t in Type.__subclasses__()}
 
 	def visit_VarDeclaration(self, node):
-		node.type = None
-
+		#node.type = None
 		if node.identifier in self.keywords:
 			error(node.lineno, f"Nombre '{node.name}' no es un nombre legal para declaración de variable")
 			return
-
-		if node.identifier not in self.symbols:
-			self.visit(node.datatype)
-
-			if node.type.type:
-				if node.value:
-					self.visit(node.value)
-
-					if node.value.type:
-						if node.value.type == node.type.type:
-							node.type = node.type.type
-							self.symbols[node.identifier] = node
-						else:
-							error(node.lineno,
-							f"Declarando variable '{node.name}' de tipo '{node.datatype.type.name}' pero asignada expresion de tipo '{node.value.type.name}'")
-				else:
-					node.type = node.type.type
-					self.symbols[node.identifier] = node
+		print(self.symbols)
+		if node.identifier not in self.symbols and node.identifier:
+			print("holi")
+			self.visit(node.type)
+			if node.type:
+				node.type = node.type.type
+				self.symbols[node.identifier] = node
 			else:
-				error(node.lineno, f"Tipo desconocido '{node.type.name}'")
+				error(node.lineno, f"Tipo desconocido '{node.type}'")
 		else:
-			prev_lineno = self.symbols[node.name].lineno
-			error(node.lineno, f"Nombre '{node.name}' ya se ha definido en linea {prev_lineno}")
+			prev_lineno = self.symbols[node.identifier].lineno
+			error(node.lineno, f"Nombre '{node.identifier
+			}' ya se ha definido en linea {prev_lineno}")
 
 	def visit_ConstDeclaration(self, node):
 		# Para una declaración, deberá verificar que no esté ya definida.
@@ -262,7 +251,7 @@ class CheckProgramVisitor(NodeVisitor):
 
 	def visit_SimpleType(self, node):
 		# Asocie un nombre de tipo como "int" con un objeto de tipo
-		node.type = Type.get_by_name(node.name)
+		node.type = node.type_identifier
 		if node.type is None:
 			error(node.lineno, f"Tipo invalido '{node.name}'")
 
