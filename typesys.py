@@ -7,11 +7,10 @@ REL_BIN_OPS = ["<", "<=", ">", ">=", "==", "!="]
 BOOL_BIN_OPS = ["&&", "||", "==", "!="]
 BOOL_UNARY_OPS = ["!"]
 
-class Type():
+class DType(object):
 	'''
 	Clase base para nuestro sistema de tipos
 	'''
-
 	@classmethod
 	def binop_type(cls, op, right_type):
 		'''
@@ -30,7 +29,7 @@ class Type():
 
 		return None
 
-class RealType(Type):
+class RealType(DType):
 	name = "real"
 
 	@classmethod
@@ -45,8 +44,8 @@ class RealType(Type):
 
 
 
-class IntType(Type):
-	name = "int"
+class IntType(DType):
+	name = "integer"
 
 	@classmethod
 	def binop_type(cls, op, right_type):
@@ -59,7 +58,7 @@ class IntType(Type):
 		return None
 
 
-class CharType(Type):
+class CharType(DType):
 	name = "char"
 
 	@classmethod
@@ -71,7 +70,7 @@ class CharType(Type):
 		return None
 
 
-class BoolType(Type):
+class BoolType(DType):
 	name = "bool"
 
 	@classmethod

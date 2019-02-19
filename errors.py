@@ -12,8 +12,7 @@ def error(lineno, message, filename=None):
 		errmsg = "{}: {}".format(lineno, message)
 	else:
 		errmsg = "{} : {} : {}".format(filename,lineno,message)
-	for subscriber in _subscribers:
-		subscriber(errmsg)
+	print(errmsg)
 	_num_errors += 1
 
 def errors_reported():

@@ -76,8 +76,11 @@ class ListVariableDeclaration(AST):
     def append(self,e):
         self.variables.append(e)
 
-class VarDeclaration(AST):
-    _fields = ['identifier','type','list_identifier']
+class OneVarDeclaration(AST):
+    _fields = ['identifier','type']
+
+class MuchVarDeclaration(AST):
+    _fields = ['list_identifier','type']
 
 class ListIdentifier(AST):
     _fields = ['identifier']

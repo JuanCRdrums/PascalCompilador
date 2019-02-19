@@ -80,11 +80,11 @@ class PasParser(Parser):
     @_('identifier COLON type')
     def var_declaration(self,p):
         self._leafDec = True
-        return VarDeclaration(p.identifier,p.type,None)
+        return OneVarDeclaration(p.identifier,p.type)
 
     @_('list_identifier COLON type')
     def var_declaration(self,p):
-        return VarDeclaration(None,p.type,p.list_identifier)
+        return MuchVarDeclaration(p.list_identifier,p.type)
 
     @_('identifier')
     def list_identifier(self,p):
