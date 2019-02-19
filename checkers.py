@@ -118,6 +118,8 @@ from collections import ChainMap
 from errors import error
 from astobjects import *
 from typesys import *
+import sys
+from parser import *
 
 class CheckProgramVisitor(NodeVisitor):
 	def __init__(self):
@@ -349,17 +351,17 @@ def check_program(ast):
 	checker.visit(ast)
 
 def main():
-	'''
-	Programa Main. Usado para testing
-	'''
-	import sys
-	from parser import parse
+
 
 	if len(sys.argv) < 2:
 		sys.stderr.write('Uso: python -m mpascal.checker filename\n')
 		raise SystemExit(1)
-
-	ast = parse(open(sys.argv[1]).read())
+	parse = PasParser()
+	lexer = PascalLexer()
+	parser = PasParser()
+	toopen = open(sys.argv[1])
+	code = toopen.read()
+	ast = parser.parse(lexer.tokenize(code))
 	check_program(ast)
 	if '--show-types' in sys.argv:
 		for depth, node in flatten(ast):
