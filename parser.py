@@ -14,7 +14,7 @@ class PasParser(Parser):
 		('left', 'NOT'),
 		('left', 'PLUS','MINUS'),
 		('left', 'TIMES','DIV'),
-        ('right', 'ELSE'),
+        ('right', 'ELSE')
     )
 
     start = 'program'
@@ -56,9 +56,6 @@ class PasParser(Parser):
     def constant_definition(self,p):
         return ConstantDefinition(p.identifier,p[2])
 
-    @_('identifier EQ identifier')
-    def constant_definition(self,p):
-        return ConstantDefinition(p[0],p[2])
 
     @_('empty')
     def variable_declaration_part(self,p):
@@ -339,11 +336,11 @@ class PasParser(Parser):
 
     @_('simple_expression')
     def expression(self,p):
-        return Expression(p.simple_expression,None,None)
+        return Expression(p.simple_expression)
 
     @_('simple_expression relational_operator simple_expression')
     def expression(self,p):
-        return Expression(p.simple_expression0,p.relational_operator,p.simple_expression1)
+        return BinaryOp(p.relational_operator,p.simple_expression0,p.simple_expression1)
 
     @_('sign term list_adding_term')
     def simple_expression(self,p):
@@ -369,12 +366,13 @@ class PasParser(Parser):
 
     @_('list_mult_factor multiplying_operator factor')
     def list_mult_factor(self,p):
-        p.list_mult_factor.append(p.factor)
-        return ListMultFactor(p.list_mult_factor,p.multiplying_operator)
+        #p.list_mult_factor.append(p.factor)
+        #return ListMultFactor(p.list_mult_factor,p.multiplying_operator)
+        return BinaryOp(p.multiplying_operator,p.list_mult_factor,p.factor)
 
     @_('variable')
     def factor(self,p):
-        return FactorVariable(p[0])
+        return Factor(p[0])
 
     @_('INTCONST')
     def factor(self,p):
@@ -390,7 +388,7 @@ class PasParser(Parser):
 
     @_('NOT factor')
     def factor(self,p):
-        return FactorNot(p[1],p[0])
+        return Factor(p[1])
 
     @_('procedure_statement')
     def factor(self,p):
@@ -398,35 +396,35 @@ class PasParser(Parser):
 
     @_('EQ')
     def relational_operator(self,p):
-        return RelationalOperator(p)
+        return RelationalOperator(p[0],_leaf = True)
 
     @_('NE')
     def relational_operator(self,p):
-        return RelationalOperator(p)
+        return RelationalOperator(p[0],_leaf = True)
 
     @_('LT')
     def relational_operator(self,p):
-        return RelationalOperator(p)
+        return RelationalOperator(p[0], _leaf = True)
 
     @_('LE')
     def relational_operator(self,p):
-        return RelationalOperator(p)
+        return RelationalOperator(p[0], _leaf = True)
 
     @_('GE')
     def relational_operator(self,p):
-        return RelationalOperator(p)
+        return RelationalOperator(p[0], _leaf = True)
 
     @_('GT')
     def relational_operator(self,p):
-        return RelationalOperator(p)
+        return RelationalOperator(p[0], _leaf = True)
 
     @_('PLUS')
     def sign(self,p):
-        return Sign(p[0])
+        return Sign(p[0], _leaf = True)
 
     @_('MINUS')
     def sign(self,p):
-        return Sign(p[0])
+        return Sign(p[0], _leaf = True)
 
     @_('empty')
     def sign(self,p):

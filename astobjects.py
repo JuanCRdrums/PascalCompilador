@@ -206,7 +206,7 @@ class WhileStatement(AST):
     _fields = ['expression','statement']
 
 class Expression(AST):
-    _fields = ['simple1','relational','simple2']
+    _fields = ['simple']
 
 class SimpleExpression(AST):
     _fields = ['sign','term','list']
@@ -233,11 +233,8 @@ class FactorVariable(AST):
 class FactorPar(AST):
     _fields = ['factor','lpar','rpar']
 
-class FactorNot(AST):
-    _fields = ['factor','not']
-
 class RelationalOperator(AST):
-    _fields = ['op']
+    _fields = ['value']
 
 class Sign(AST):
     _fields = ['value']

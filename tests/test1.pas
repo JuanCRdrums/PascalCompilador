@@ -1,6 +1,7 @@
 program test;
-var x,y,z : integer;
-c : char;
+const constante = 1;
+var c : char;
+x,y,z,c : integer;
 procedure holi;
 begin
   write("holi")
@@ -10,18 +11,20 @@ begin
   write("chau")
 end;
 begin
-  x := -1*2 + (3 - 5);
-  y := 2 div 3 div 5*3 - (3*5 + 2) div 2;
-  z := 5;
+  x := -1 * "abc" + (3 - 5);
+  y := 5 div 3 div 5 - 3 * (3*5 - 2) div 2;
+  z := 3;
+  c := "holiwi";
+  c := 1;
   read(x,y,z);
-  write(x,y,x+y);
+  write(x,y,x - y);
   read(y);
-  if -x <> y*1 then
+  if -x <> y * 500 then
     write(x)
   else
     write(y);
   read(z);
-  if not "holi" = (y and 1 = 2) then
+  if not "holi" = (y or 7 = 5) then
   begin
     write("hola");
     write("chao")
@@ -29,7 +32,7 @@ begin
   else
   begin
     read(z);
-    y := x + 1
+    y := x + "chai"
   end;
   read(x)
 end.

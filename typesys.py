@@ -28,19 +28,7 @@ class DType(object):
 				return type_cls
 
 		return None
-
-class RealType(DType):
-	name = "real"
-
-	@classmethod
-	def binop_type(cls, op, right_type):
-		if issubclass(right_type, RealType):
-			if op in ARITHM_BIN_OPS:
-				return RealType
-			elif op in REL_BIN_OPS:
-				return BoolType
-
-		return None
+
 
 
 
@@ -70,13 +58,5 @@ class CharType(DType):
 		return None
 
 
-class BoolType(DType):
-	name = "bool"
 
-	@classmethod
-	def binop_type(cls, op, right_type):
-		if issubclass(right_type, BoolType) and op in BOOL_BIN_OPS:
-			return BoolType
-
-		return None
 
